@@ -1,64 +1,176 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+
 format = """
-[░▒▓](#a3aed2)\
-[  ](bg:#a3aed2 fg:#090c0c)\
-[](bg:#769ff0 fg:#a3aed2)\
+[](fg:pc-info)\
+$os\
+$username\
+[@](italic fg:dark-text bg:pc-info)\
+$hostname\
+[](fg:pc-info bg:path)\
 $directory\
-[](fg:#769ff0 bg:#394260)\
+[](fg:path bg:git-module)\
 $git_branch\
 $git_status\
-[](fg:#394260 bg:#212736)\
+[](fg:git-module bg:package-module)\
+$package\
+[](fg:package-module bg:code-module)\
+$container\
+$kubernetes\
+$docker_context\
 $nodejs\
 $rust\
 $golang\
 $php\
-[](fg:#212736 bg:#1d2230)\
-$time\
-[ ](fg:#1d2230)\
+[](fg:code-module)\
+$cmd_duration\
 \n$character"""
 
+palette = "default"
+
+[palettes.default]
+# dark-text = "#000000"
+# light-text = "#e3e5e5"
+# color-text = "#769ff0"
+# error-highlight = "#e06c75"
+# succes-highlight = "#a3be8c"
+
+# pc-info = "#e5e9f0"
+# path = "#81a0c0"
+# git-module = "#394260"
+# package-module = "#ebcb8b"
+# code-module = "#212736"
+dark-text = "#000000"
+light-text = "#e3e5e5"
+light-color-text = "#a3be8c"
+dark-color-text = "#2f3728"
+error-highlight = "#e06c75"
+succes-highlight = "#a3be8c"
+
+pc-info = "#e5e9f0"
+path = "#a3be8c"
+git-module = "#778b66"
+package-module = "#4b5740"
+code-module = "#1f241a"
+
+[character]
+success_symbol = "[❯](fg:succes-highlight)"
+error_symbol = "[✗](fg:error-highlight)"
+
+[os]
+format = "[ $symbol ]($style)"
+style = "fg:dark-text bg:pc-info"
+disabled = false
+
+[os.symbols]
+Windows = ""
+Linux = ""
+Mint = ""
+Arch = ""
+Ubuntu = ""
+Raspbian = ""
+
+[shell]
+format = '[$indicator]($style)'
+disabled = false                  # module not usefull for me
+style = 'bg:pc-info fg:dark-text'
+powershell_indicator = " "
+bash_indicator = "\uebca"         #bash icon
+unknown_indicator = '# '
+
+[username]
+format = '[$user]($style)'
+style_user = 'italic fg:dark-text bg:pc-info'
+style_root = 'italic fg:error-highlight bg:pc-info'
+disabled = false
+show_always = true
+
+[hostname]
+ssh_only = false
+format = '[[$hostname]($style)[$ssh_symbol]($style) ]($style)'
+style = "italic bg:pc-info fg:dark-text"
+ssh_symbol = " "                                              #\uf817
+disabled = false
+
 [directory]
-style = "fg:#e3e5e5 bg:#769ff0"
+style = "fg:package-module bg:path"
 format = "[ $path ]($style)"
 truncation_length = 3
 truncation_symbol = "…/"
+read_only = ""
 
 [directory.substitutions]
-"Documents" = " "
-"Downloads" = " "
-"Music" = " "
-"Pictures" = " "
+"Documents" = ""
+"Downloads" = ""
+"Music" = ""
+"Pictures" = ""
+
+[cmd_duration]
+min_time = 1
+format = "[ $duration]($style) "
 
 [git_branch]
 symbol = ""
-style = "bg:#394260"
-format = '[[ $symbol $branch ](fg:#769ff0 bg:#394260)]($style)'
+style = "bg:git-module"
+format = '[[ $symbol $branch ](fg:light-text bg:git-module)]($style)'
 
 [git_status]
-style = "bg:#394260"
-format = '[[($all_status$ahead_behind )](fg:#769ff0 bg:#394260)]($style)'
+style = "bg:git-module"
+format = '[[($all_status$ahead_behind )](fg:light-text bg:git-module)]($style)'
+
+[container]
+format = '[$symbol \[$name\] ]($style)'
+symbol = "⬢"
+style = "fg:light-color-text bg:code-module"
+
+[docker_context]
+format = '[$symbol $context]($style)'
+symbol = ""
+style = "fg:light-color-text bg:code-module"
+
+[package]
+format = '[ $symbol $version ]($style)'
+style = "fg:light-color-text bg:package-module"
+symbol = ""
+display_private = true
 
 [nodejs]
 symbol = ""
-style = "bg:#212736"
-format = '[[ $symbol ($version) ](fg:#769ff0 bg:#212736)]($style)'
+style = "bg:code-module"
+format = '[[ $symbol ($version) ](fg:light-color-text bg:code-module)]($style)'
 
 [rust]
 symbol = ""
-style = "bg:#212736"
-format = '[[ $symbol ($version) ](fg:#769ff0 bg:#212736)]($style)'
+style = "fg:light-color-text bg:code-module"
+format = '[ $symbol $toolchain::$version ]($style)'
+
+[c]
+symbol = ""
+style = "bg:code-module"
+format = '[[ $symbol ($toolchain::$version) ](fg:light-color-text bg:code-module)]($style)'
 
 [golang]
 symbol = "ﳑ"
-style = "bg:#212736"
-format = '[[ $symbol ($version) ](fg:#769ff0 bg:#212736)]($style)'
+style = "bg:code-module"
+format = '[[ $symbol ($version) ](fg:light-color-text bg:code-module)]($style)'
 
 [php]
+format = '[[ $symbol ($version) ](fg:light-color-text bg:code-module)]($style)'
 symbol = ""
-style = "bg:#212736"
-format = '[[ $symbol ($version) ](fg:#769ff0 bg:#212736)]($style)'
+style = "bg:code-module"
 
-[time]
+[kubernetes]
+format = '[$symbol ($user on )($cluster in )$context \($namespace\) ]($style)'
+symbol = " ﴱ"
+detect_files = ['k8s']
+style = "fg:light-color-text bg:code-module"
 disabled = false
-time_format = "%R" # Hour:Minute Format
-style = "bg:#1d2230"
-format = '[[  $time ](fg:#a0a9cb bg:#1d2230)]($style)'
+
+[kubernetes.context_aliases]
+'dev.local.cluster.k8s' = 'dev'
+'.*/openshift-cluster/.*' = 'openshift'
+'gke_.*_(?P<var_cluster>[\w-]+)' = 'gke-$var_cluster'
+
+[kubernetes.user_aliases]
+'dev.local.cluster.k8s' = 'dev'
+'kind-.*' = 'kind'
+'root/.*' = 'root'
